@@ -1,4 +1,5 @@
 # Raw Material Calculator
+Site is live at: https://tuaaananhnguyen.github.io/raw-material-calculator
 
 ## Tech Stack
 - **React**
