@@ -11,18 +11,16 @@ import { type TotalResult } from "./types/crafting";
 function App() {
   const [selectedItem, setSelectedItem] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
-
   const [results, setResults] = useState<TotalResult[]>([]);
   const [craftableItems, setCraftableItems] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // fetch list of craftable items
+  // fetch craftable items
   useEffect(() => {
     async function getDropdownOptions() {
       const { data } = await supabaseClient
         .from("recipes")
         .select("parent_item");
-
       if (data) {
         const uniqueNames = Array.from(
           new Set(data.map((r) => r.parent_item)),
@@ -34,10 +32,9 @@ function App() {
     getDropdownOptions();
   }, []);
 
-  // calculate materials when item or quantity changes
+  // calculation trigger
   useEffect(() => {
     let isMounted = true;
-
     if (selectedItem) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(true);
@@ -48,7 +45,6 @@ function App() {
         }
       });
     }
-
     return () => {
       isMounted = false;
     };
@@ -69,22 +65,15 @@ function App() {
           <img src={viteLogo} className="vite" alt="Vite logo" />
         </div>
 
-        <div>
+        <div className="header-content">
           <h1>Raw Material Calculator</h1>
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              marginTop: "10px",
-              justifyContent: "center",
-            }}
-          >
+          <div className="controls">
             <select
-              className="counter"
+              className="counter main-select"
               value={selectedItem}
               onChange={(e) => setSelectedItem(e.target.value)}
             >
-              {craftableItems.length === 0 && <option>Loading items...</option>}
+              {craftableItems.length === 0 && <option>Loading...</option>}
               {craftableItems.map((item) => (
                 <option key={item} value={item}>
                   {item}
@@ -94,8 +83,7 @@ function App() {
 
             <input
               type="number"
-              className="counter"
-              style={{ width: "80px" }}
+              className="counter qty-input"
               value={quantity}
               min="1"
               onChange={(e) =>
@@ -105,74 +93,49 @@ function App() {
           </div>
         </div>
 
-        <div
-          className="results-table"
-          style={{ width: "100%", maxWidth: "600px", marginTop: "20px" }}
-        >
-          {loading ? (
-            <div style={{ padding: "40px", opacity: 0.5 }}>
-              Querying Database...
-            </div>
-          ) : (
-            <table
+        <div className="results-container">
+          <table className="results-table">
+            <thead>
+              <tr>
+                <th>Material</th>
+                <th>Category</th>
+                <th style={{ textAlign: "right" }}>Amount</th>
+              </tr>
+            </thead>
+            <tbody
               style={{
-                width: "100%",
-                textAlign: "left",
-                borderCollapse: "collapse",
+                opacity: loading ? 0.4 : 1,
+                transition: "opacity 0.2s ease",
               }}
             >
-              <thead>
-                <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                  <th style={{ padding: "12px 8px" }}>Material</th>
-                  <th style={{ padding: "12px 8px" }}>Category</th>
-                  <th style={{ padding: "12px 8px", textAlign: "right" }}>
-                    Amount
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {results.length > 0 ? (
-                  results.map((res) => (
-                    <tr
-                      key={res.material}
-                      style={{
-                        borderBottom: "1px solid var(--border)",
-                        fontSize: "14px",
-                      }}
-                    >
-                      <td style={{ padding: "10px 8px" }}>{res.material}</td>
-                      <td style={{ padding: "10px 8px" }}>
+              {results.length > 0
+                ? results.map((res) => (
+                    <tr key={res.material}>
+                      <td>{res.material}</td>
+                      <td>
                         <span className={`badge ${res.category.toLowerCase()}`}>
                           {res.category}
                         </span>
                       </td>
-                      <td
-                        style={{
-                          padding: "10px 8px",
-                          textAlign: "right",
-                          fontWeight: "bold",
-                        }}
-                      >
+                      <td className="amount-cell">
                         {res.totalCount.toLocaleString()}
                       </td>
                     </tr>
                   ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={3}
-                      style={{
-                        padding: "20px",
-                        textAlign: "center",
-                        opacity: 0.5,
-                      }}
-                    >
-                      No ingredients found for this item.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                : !loading && (
+                    <tr>
+                      <td colSpan={3} className="empty-state">
+                        No ingredients found.
+                      </td>
+                    </tr>
+                  )}
+            </tbody>
+          </table>
+
+          {loading && (
+            <div className="loading-overlay">
+              <span>Updating...</span>
+            </div>
           )}
         </div>
       </section>
