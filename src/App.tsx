@@ -4,6 +4,7 @@ import "./App.css";
 import { calculateRawMaterials } from "./service/calculator";
 import { supabaseClient } from "./service/supabase";
 import { type TotalResult } from "./types/crafting";
+import { copyToClipboard } from "./service/clipboard";
 
 function App() {
   const [selectedItem, setSelectedItem] = useState<string>("");
@@ -11,6 +12,7 @@ function App() {
   const [results, setResults] = useState<TotalResult[]>([]);
   const [craftableItems, setCraftableItems] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [copied, setCopied] = useState(false);
 
   // fetch craftable items
   useEffect(() => {
@@ -47,10 +49,17 @@ function App() {
     };
   }, [selectedItem, quantity]);
 
+  const handleCopy = async () => {
+    const success = await copyToClipboard(results, selectedItem, quantity);
+    if (success) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   return (
     <>
       <section id="center">
-
         <div className="header-content">
           <h1>Raw Material Calculator</h1>
           <div className="controls">
@@ -80,6 +89,23 @@ function App() {
         </div>
 
         <div className="results-container">
+          <div className="table-actions">
+            {results.length > 0 && (
+              <button
+                className={`copy-btn ${copied ? "copied" : ""}`}
+                onClick={handleCopy}
+              >
+                {copied ? "✓ Copied" : "Copy to Clipboard"}
+              </button>
+            )}
+
+            {loading && (
+              <div className="loading-overlay">
+                <span>Updating...</span>
+              </div>
+            )}
+          </div>
+
           <table className="results-table">
             <thead>
               <tr>
