@@ -1,71 +1,67 @@
 // src/service/calculator.ts
 
-import { defaultRecipe } from "../data/defaultRecipe";
-import {
-  type MaterialCategory,
-  type RecipeBook,
-  type TotalResult,
-} from "../types/crafting";
+import { supabaseClient } from "./supabase";
+import { type MaterialCategory, type TotalResult } from "../types/crafting";
 
-export function calculateRawMaterials(
+export async function calculateRawMaterials(
   targetItem: string,
   quantity: number,
-  customRecipes: RecipeBook = {},
-): TotalResult[] {
-  const allRecipes: RecipeBook = { ...defaultRecipe, ...customRecipes };
+): Promise<TotalResult[]> {
+  const { data: recipes, error: recError } = await supabaseClient
+    .from("recipes")
+    .select("*");
+  const { data: items, error: itemError } = await supabaseClient
+    .from("items")
+    .select("name, category");
 
-  const rawTotals = aggregateMaterials(allRecipes, targetItem, quantity);
-  return formatResults(rawTotals);
-}
-
-function findCategory(
-  materialName: string,
-  book: RecipeBook,
-): MaterialCategory {
-  for (const item in book) {
-    const found = book[item].find((i) => i.material === materialName);
-    if (found) return found.category;
+  if (recError || itemError) {
+    console.error("Database fetch failed:", recError || itemError);
+    return [];
   }
-  return "Misc";
-}
 
-const aggregateMaterials = (
-  book: RecipeBook,
-  targetItem: string,
-  quantity: number,
-): Record<string, { count: number; category: MaterialCategory }> => {
-  const totals: Record<string, { count: number; category: MaterialCategory }> =
-    {};
+  const categoryMap: Record<string, MaterialCategory> = {};
+  items.forEach((item) => {
+    categoryMap[item.name] = item.category as MaterialCategory;
+  });
+
+  // create a lookup map for recipes
+  // maps: "Aeriastra" -> [{material: "Cash", count: 1000000}, ...]
+  const recipeBook: Record<string, { material: string; count: number }[]> = {};
+
+  recipes.forEach((row) => {
+    if (!recipeBook[row.parent_item]) recipeBook[row.parent_item] = [];
+    recipeBook[row.parent_item].push({
+      material: row.material,
+      count: row.amount,
+    });
+  });
+
+  // recursive aggregation
+  const totals: Record<string, number> = {};
 
   const solve = (itemName: string, multiplier: number) => {
-    const recipe = book[itemName];
+    const ingredients = recipeBook[itemName];
 
-    if (recipe && recipe.length > 0) {
-      recipe.forEach((ing) => solve(ing.material, ing.count * multiplier));
+    if (ingredients && ingredients.length > 0) {
+      // if its a craftable item, loop back and dig in its butt twin :v:
+      ingredients.forEach((ing) => solve(ing.material, ing.count * multiplier));
     } else {
-      if (!totals[itemName]) {
-        totals[itemName] = { count: 0, category: findCategory(itemName, book) };
-      }
-      totals[itemName].count += multiplier;
+      // if its raw material, add to totals
+      totals[itemName] = (totals[itemName] || 0) + multiplier;
     }
   };
 
   solve(targetItem, quantity);
-  return totals;
-};
 
-export const formatResults = (
-  totals: Record<string, { count: number; category: MaterialCategory }>,
-): TotalResult[] => {
   return Object.entries(totals)
-    .map(([name, data]) => ({
+    .map(([name, count]) => ({
       material: name,
-      category: data.category,
-      totalCount: data.count,
+      category: categoryMap[name] || "Misc",
+      totalCount: count,
     }))
     .sort(
       (a, b) =>
         a.category.localeCompare(b.category) ||
         a.material.localeCompare(b.material),
     );
-};
+}

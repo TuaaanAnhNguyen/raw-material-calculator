@@ -4,11 +4,16 @@ Site is live at: https://tuaaananhnguyen.github.io/raw-material-calculator
 ## Tech Stack
 - **React**
 - **Typescript**
+- **Supabase**
 
 ## Project Structure
 
 ```
 raw-mat-calc
+├─ .vite
+│  └─ deps
+│     ├─ package.json
+│     └─ _metadata.json
 ├─ eslint.config.js
 ├─ index.html
 ├─ package-lock.json
@@ -24,13 +29,11 @@ raw-mat-calc
 │  │  ├─ hero.png
 │  │  ├─ react.svg
 │  │  └─ vite.svg
-│  ├─ data
-│  │  ├─ customRecipe.ts
-│  │  └─ defaultRecipe.ts
 │  ├─ index.css
 │  ├─ main.tsx
 │  ├─ service
-│  │  └─ calculator.ts
+│  │  ├─ calculator.ts
+│  │  └─ supabase.ts
 │  └─ types
 │     └─ crafting.ts
 ├─ tsconfig.app.json
