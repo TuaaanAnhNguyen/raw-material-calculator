@@ -1,7 +1,4 @@
 import { useState, useEffect } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "./assets/vite.svg";
-import heroImg from "./assets/hero.png";
 import "./App.css";
 
 import { calculateRawMaterials } from "./service/calculator";
@@ -53,17 +50,6 @@ function App() {
   return (
     <>
       <section id="center">
-        <div className="hero">
-          <img
-            src={heroImg}
-            className="base"
-            width="170"
-            height="179"
-            alt="Hero"
-          />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
 
         <div className="header-content">
           <h1>Raw Material Calculator</h1>
