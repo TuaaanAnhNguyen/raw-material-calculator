@@ -7,7 +7,6 @@ Site is live at: https://tuaaananhnguyen.github.io/raw-material-calculator
 - **Supabase**
 
 ## Project Structure
-
 ```
 raw-mat-calc
 ├─ .vite
