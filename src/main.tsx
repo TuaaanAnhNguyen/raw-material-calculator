@@ -5,7 +5,7 @@ import App from "./App.tsx";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import AddPage from "./AddPage.tsx";
 
-const superDuperSecretAddPageUrl = import.meta.env.VITE_ADD_PAGE_URL;
+const superDuperSecretAddPageUrl = import.meta.env.VITE_ADD_PAGE_URL as string;
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
