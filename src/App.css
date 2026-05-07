@@ -325,3 +325,90 @@
   border-color: #00ff88;
   color: #00ff88;
 }
+
+.add-page-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #0a0a0a;
+}
+
+.add-page-header {
+  padding: 40px 20px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.add-page-flex-container {
+  display: flex;
+  flex: 1; /* Take up remaining height */
+  width: 100%;
+}
+
+.add-page-column {
+  flex: 1; /* Each column takes exactly 50% */
+  padding: 40px;
+  border-right: 1px solid var(--border);
+}
+
+.add-page-column:last-child {
+  border-right: none;
+}
+
+/* UI Components inside columns */
+.add-page-card {
+  width: 100%;
+  max-width: 800px; /* Allow cards to be larger on big screens */
+  margin: 0 auto;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 25px;
+}
+
+.input-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-stack label {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--accent);
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+
+.recipe-form-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.qty-small {
+  width: 120px !important;
+  text-align: center;
+}
+
+.save-btn {
+  background: var(--accent) !important;
+  color: white !important;
+  margin-top: 10px;
+  padding: 15px !important;
+  font-size: 16px !important;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+/* Remove default margin-bottom from counter for cleaner stacking */
+.add-page-column .counter {
+  margin-bottom: 0;
+}

@@ -22,6 +22,7 @@ raw-mat-calc
 │  └─ icons.svg
 ├─ README.md
 ├─ src
+│  ├─ AddPage.tsx
 │  ├─ App.css
 │  ├─ App.tsx
 │  ├─ assets
@@ -31,7 +32,9 @@ raw-mat-calc
 │  ├─ index.css
 │  ├─ main.tsx
 │  ├─ service
+│  │  ├─ addToDatabase.ts
 │  │  ├─ calculator.ts
+│  │  ├─ clipboard.ts
 │  │  └─ supabase.ts
 │  └─ types
 │     └─ crafting.ts
