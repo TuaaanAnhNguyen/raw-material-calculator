@@ -2,10 +2,10 @@
 
 import { supabaseClient } from "./supabase";
 
-export const addItem = async (name: string, category: string) => {
+export const addItem = async (inputName: string, inputCategory: string) => {
   const { data, error } = await supabaseClient
     .from("items")
-    .insert([{ item_name: name, category: category }]);
+    .insert({ name: inputName, category: inputCategory });
 
   if (error) throw error;
   return data;
@@ -18,7 +18,7 @@ export const addRecipe = async (
   const recipeData = ingredients.map((ing) => ({
     parent_item: parentItem,
     material: ing.material,
-    count: ing.count,
+    amount: ing.count,
   }));
 
   const { data, error } = await supabaseClient
