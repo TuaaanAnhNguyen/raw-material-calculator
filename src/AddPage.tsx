@@ -120,14 +120,6 @@ export default function AddPage() {
             </p>
 
             <div className="input-stack">
-              <input
-                className="counter"
-                list="item-suggestions"
-                value={targetItem}
-                onChange={(e) => setTargetItem(e.target.value)}
-                placeholder="Search or type parent item..."
-              />
-
               <label>Target (Parent) Item</label>
               <input
                 className="counter"
