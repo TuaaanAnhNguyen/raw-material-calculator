@@ -1,3 +1,7 @@
+// src/service/clipboard.ts
+
+// change later
+
 import { type TotalResult } from "../types/crafting";
 
 export const copyToClipboard = async (
@@ -22,3 +26,12 @@ export const copyToClipboard = async (
     return false;
   }
 };
+
+// later
+// export const copyAsWikiText = async (
+//   results: TotalResult[],
+//   selectedItem: string,
+//   quantity: number,
+// ): Promise<boolean> => {
+//   if (results.length === 0) return false;
+// }

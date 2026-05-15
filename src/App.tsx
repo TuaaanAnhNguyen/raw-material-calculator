@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "./App.css";
 
 import { calculateRawMaterials } from "./service/calculator";
-import { supabaseClient } from "./service/supabase";
+import { getItemsToCraft } from "./service/supabaseCRUD";
 import { type TotalResult } from "./types/crafting";
 import { copyToClipboard } from "./service/clipboard";
 
@@ -17,12 +17,11 @@ function App() {
   // fetch craftable items
   useEffect(() => {
     async function getDropdownOptions() {
-      const { data } = await supabaseClient
-        .from("recipes")
-        .select("parent_item");
-      if (data) {
+      const ItemsToCraft = await getItemsToCraft();
+
+      if (ItemsToCraft) {
         const uniqueNames = Array.from(
-          new Set(data.map((r) => r.parent_item)),
+          new Set(ItemsToCraft.map((r) => r.parent_item)),
         ).sort();
         setCraftableItems(uniqueNames);
         if (uniqueNames.length > 0) setSelectedItem(uniqueNames[0]);

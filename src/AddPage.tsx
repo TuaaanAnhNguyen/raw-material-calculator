@@ -1,21 +1,26 @@
 // src/AddPage.tsx
 
-import { useState } from "react";
-import { addItem, addRecipe } from "./service/addToDatabase";
+import { useEffect, useState } from "react";
+import { addItem, addRecipe, getAllItems } from "./service/supabaseCRUD";
 
 export default function AddPage() {
-  // State for Add Item
   const [newItem, setNewItem] = useState({ name: "", category: "Misc" });
-
-  // State for Add Recipe
   const [targetItem, setTargetItem] = useState("");
   const [rows, setRows] = useState([{ material: "", count: 1 }]);
+
+  const [itemList, setItemList] = useState<{ name: string }[]>([]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability
+    refreshItemList();
+  }, []);
 
   const handleAddItem = async () => {
     try {
       await addItem(newItem.name, newItem.category);
       alert(`${newItem.name} registered!`);
       setNewItem({ name: "", category: "Misc" });
+      refreshItemList();
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "An unknown error occurred";
@@ -43,14 +48,29 @@ export default function AddPage() {
     }
   };
 
+  const refreshItemList = async () => {
+    try {
+      const data = await getAllItems();
+      setItemList(data || []);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      console.error("Failed to fetch items for suggestions");
+    }
+  };
+
   return (
     <div className="add-page-wrapper">
+      <datalist id="item-suggestions">
+        {itemList.map((item) => (
+          <option key={item.name} value={item.name} />
+        ))}
+      </datalist>
+
       <header className="add-page-header">
         <h1>Add Page Page :hegif:</h1>
       </header>
 
       <div className="add-page-flex-container">
-        {/* Column 1: Add Items */}
         <div className="add-page-column">
           <div className="add-page-card">
             <h2>1. Register New Item</h2>
@@ -92,19 +112,27 @@ export default function AddPage() {
           </div>
         </div>
 
-        {/* Column 2: Add Recipes */}
         <div className="add-page-column">
           <div className="add-page-card">
-            <h2>2. Build Recipe</h2>
+            <h2>2. Add Recipe</h2>
             <p className="subtitle">
               Link multiple materials to a parent item.
             </p>
 
             <div className="input-stack">
+              <input
+                className="counter"
+                list="item-suggestions"
+                value={targetItem}
+                onChange={(e) => setTargetItem(e.target.value)}
+                placeholder="Search or type parent item..."
+              />
+
               <label>Target (Parent) Item</label>
               <input
                 className="counter"
                 value={targetItem}
+                list="item-suggestions"
                 onChange={(e) => setTargetItem(e.target.value)}
               />
 
@@ -115,6 +143,7 @@ export default function AddPage() {
                     <input
                       className="counter"
                       value={row.material}
+                      list="item-suggestions"
                       onChange={(e) => {
                         const newRows = [...rows];
                         newRows[idx].material = e.target.value;
@@ -131,6 +160,12 @@ export default function AddPage() {
                         setRows(newRows);
                       }}
                     />
+                    {!itemList.find((i) => i.name === row.material) &&
+                      row.material !== "" && (
+                        <span style={{ color: "#ff4444", fontSize: "10px" }}>
+                          Item does not exist
+                        </span>
+                      )}
                   </div>
                 ))}
               </div>
@@ -143,7 +178,7 @@ export default function AddPage() {
                   className="copy-btn save-btn"
                   onClick={handleSubmitRecipe}
                 >
-                  Save Complete Recipe
+                  Save Recipe
                 </button>
               </div>
             </div>

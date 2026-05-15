@@ -32,10 +32,10 @@ raw-mat-calc
 │  ├─ index.css
 │  ├─ main.tsx
 │  ├─ service
-│  │  ├─ addToDatabase.ts
 │  │  ├─ calculator.ts
 │  │  ├─ clipboard.ts
-│  │  └─ supabase.ts
+│  │  ├─ supabase.ts
+│  │  └─ supabaseCRUD.ts
 │  └─ types
 │     └─ crafting.ts
 ├─ tsconfig.app.json
